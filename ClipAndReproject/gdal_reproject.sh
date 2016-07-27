@@ -1,12 +1,11 @@
 #!/bin/bash
-##Reproject tifs from lambert to latlong
-#
+# for all the files in a directory, reproject and save in a folder
+# AUTHORS: Kimberly Peng, revised by John Squires
 
 #Input parameters: 
-#bash scriptname.sh inputdirectory outputdirectory datasetname bandname
-#for all the files in a directory, reproject and save in a folder
+#scriptname.sh inputdirectory
 
-#/data4/ErosionMapping/TRMM/scripts/./gdal_reproject.sh /data4/ErosionMapping/TRMMdailyAfrica/time_series_average
+#EXAMPLE: /data4/ErosionMapping/TRMM/scripts/./gdal_reproject.sh /data4/ErosionMapping/TRMMdailyAfrica/time_series_average
 
 InputDir=$1
 
@@ -99,7 +98,7 @@ do
 
 		#reproject from Lambert to Geographic Lat Long
 		#to prepare the tifs for geoserver, remove the '#' for the two lines below and add '#' before the following two lines under 'reproject from Geographic Lat Long to Lambert'
-		time gdalwarp -overwrite -s_srs '+proj=laea +lat_0=5 +lon_0=20 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' -t_srs '+proj=longlat +datum=WGS84 +no_defs' $InputDir/$eachFile'.tif' $OutputDir/"$eachFile"_latlong'.tif' -multi -wm 5000
+		time gdalwarp -overwrite -s_srs '+proj=laea +lat_0=5 +lon_0=20 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' -t_srs '+proj=longlat +datum=WGS84 +no_defs' -dstnodata 0 $InputDir/$eachFile'.tif' $OutputDir/"$eachFile"_latlong'.tif' -multi -wm 5000
 		chmod -R 775 $OutputDir/"$eachFile"_latlong.tif
 	fi
 
@@ -107,7 +106,7 @@ do
 	if [[ $curr == 2 && $nex == 1 ]]; then	
 		echo User has chosen to reproject from Geographic to Lambert 
 		#reproject from Geographic Lat Long to Lambert
-		time gdalwarp -overwrite -s_srs '+proj=longlat +datum=WGS84 +no_defs' -t_srs '+proj=laea +lat_0=5 +lon_0=20 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' $InputDir/$eachFile'.tif' $OutputDir/"$eachFile"_laea'.tif' -multi -wm 5000
+		time gdalwarp -overwrite -s_srs '+proj=longlat +datum=WGS84 +no_defs' -t_srs '+proj=laea +lat_0=5 +lon_0=20 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' -dstnodata 0 $InputDir/$eachFile'.tif' $OutputDir/"$eachFile"_laea'.tif' -multi -wm 5000
 		chmod -R 775 $OutputDir/"$eachFile"_laea'.tif'
 	fi
 
@@ -115,7 +114,7 @@ do
 	if [[ $curr == 3 && $nex == 1 ]]; then
 		echo User has chosen to reproject from Sinusoidal to Lambert
 		#reproject from Sinusoidal to Lambert
-		time gdalwarp -overwrite -s_srs '+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs' -t_srs '+proj=laea +lat_0=5 +lon_0=20 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' $InputDir/$eachFile'.tif' "$OutputDir"/"$eachFile"_laea'.tif' -multi -wm 5000
+		time gdalwarp -overwrite -s_srs '+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs' -t_srs '+proj=laea +lat_0=5 +lon_0=20 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' -dstnodata 0 $InputDir/$eachFile'.tif' "$OutputDir"/"$eachFile"_laea'.tif' -multi -wm 5000
 		chmod -R 775 $OutputDir/"$eachFile"_laea'.tif'
 	fi
 
