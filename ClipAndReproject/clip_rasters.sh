@@ -54,7 +54,10 @@ g.version
 #change to the directory containing the clip file
 cd $ClipDir
 
-clipfile=$(ls *$Resolution*)
+#add meter to resolution so that 500 and 5000 aren't found with * operator
+Resolution+="m"
+
+clipfile=$(ls *"$Resolution"*)
 echo $clipfile
 r.in.gdal input=$ClipDir/$clipfile output=$clipfile
 r.mask -o input=$clipfile@"$mapset"
