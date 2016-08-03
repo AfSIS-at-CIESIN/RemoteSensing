@@ -2,17 +2,22 @@
 # for all the files in a directory, reproject and save in a folder
 # AUTHORS: Kimberly Peng, revised by John Squires
 
-#Input parameters: 
-#scriptname.sh inputdirectory
-
-#EXAMPLE: /data4/ErosionMapping/TRMM/scripts/./gdal_reproject.sh /data4/ErosionMapping/TRMMdailyAfrica/time_series_average
-
-InputDir=$1
-
-#navigate to the Input Directory
-cd $InputDir
 
 #######Functions
+usage()
+{
+cat << EOF
+USAGE: $0 options
+
+This script reprojects all the TIFF files in the given directory and saves
+them to a reprojected folder.
+
+OPTIONS:
+   -h      Show this message
+   -d      Directory containing TIFF files to process (required)
+EOF
+}
+
 CurrentProj () {
 	echo What is the current projection of all the files in $InputDir ? [enter 0-4]
 	echo [1] Lambert Azimuthal Equal Area - laea
@@ -62,6 +67,33 @@ NextProj () {
 }
 
 #####################
+
+# declare globals and assign variables through getopts
+InputDir=
+
+while getopts “hd:” OPTION
+do
+    case $OPTION in
+    	d) InputDir=$OPTARG
+            ;;
+        h) usage
+            exit 1
+            ;;
+        ?) usage
+           exit
+           ;;
+     esac
+done
+
+# InputDir is required, make sure it's not empty
+if [ -z "$InputDir" ]; then
+	printf '\nERROR: You need to provide a directory.\n'
+	usage
+	exit 1
+fi
+
+#navigate to the Input Directory
+cd $InputDir
 
 # check if .tif files exist before processing
 count=`ls -1 *.tif 2>/dev/null | wc -l`
