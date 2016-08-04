@@ -1,11 +1,7 @@
 #!/bin/bash
 # clip_rasters.sh
-# written by: Kimberly Peng, 
-# modified by: John Squires
+# written by Kimberly Peng, modified by John Squires
 # Clips rasters for geographic and lambert azimuthal equal area geotiffs.
-
-#Sample Usage
-#/data4/afsisdata/IRI_MODIS/scripts/./clip_rasters.sh /data4/AfSIS2tifs/SRTM/SRTM_AfricaClip_LAEA /data4/afsisdata/IRI_MODIS/scripts/test 30000 laeaKPtemp trmm
 
 usage()
 {
@@ -19,8 +15,7 @@ OPTIONS:
    -h      Show this message
    -c      Directory containing clip masks (required)
    -i      Input directory of geotiffs to be clipped (required)
-   -l      GRASS location (required)
-   -m      GRASS mapset (required)
+   -m      Full path for GRASS mapset, that will be created (required)
    -r      Resolution of data in meters (required)
              example -r 500 (for 500 meter resolution)
 EOF
@@ -30,10 +25,9 @@ EOF
 ClipDir=
 InputDir=
 Resolution=
-location=
 mapset=
 
-while getopts “hc:i:l:m:r:” OPTION
+while getopts “hc:i:m:r:” OPTION
 do
     case $OPTION in
     	c) ClipDir=$OPTARG
@@ -42,8 +36,6 @@ do
             exit 1
             ;;
         i) InputDir=$OPTARG
-			;;
-		l) location=$OPTARG
 			;;
 		m) mapset=$OPTARG
 			;;
@@ -56,7 +48,7 @@ do
 done
 
 # 5 required arguments, check that they were provided
-if [[ -z "$ClipDir" ]] || [[ -z "$InputDir" ]] || [[ -z "$location" ]] || \
+if [[ -z "$ClipDir" ]] || [[ -z "$InputDir" ]] || \
    [[ -z "$mapset" ]] || [[ -z "$Resolution" ]]; then
 	printf '\nERROR: You need to supply the flags and values for each required argument.\n'
 	usage
@@ -66,19 +58,22 @@ fi
 #####Start grass environment#####
 #some settings:
 TMPDIR=/tmp
+location=$(dirname "$mapset")
+mapsetName=$(basename "$mapset")
+locationName=$(basename "$location")
 
 # path to GRASS binaries and libraries:
 export GISBASE=/usr/lib/grass64
 
 #Create temporary mapset with WIND parameter
-mkdir /data3/grassdata/$location/$mapset
-cp /data3/grassdata/$location/PERMANENT/WIND /data3/grassdata/$location/$mapset
+mkdir $mapset
+cp $location/PERMANENT/WIND $mapset
 
 # generate GRASS settings file:
 # the file contains the GRASS variables which define the LOCATION etc.
 echo "GISDBASE: /data3/grassdata
-LOCATION_NAME: $location
-MAPSET: $mapset
+LOCATION_NAME: $locationName
+MAPSET: $mapsetName
 " > $TMPDIR/.grassrc6_modis$$
 
 # path to GRASS settings file:
@@ -100,10 +95,10 @@ cd $ClipDir
 Resolution+="m"
 
 clipfile=$(ls *"$Resolution"*)
-echo $clipfile
+echo Clipfile is $clipfile
 r.in.gdal input=$ClipDir/$clipfile output=$clipfile
-r.mask -o input=$clipfile@"$mapset"
-g.region rast=$clipfile@"$mapset"
+r.mask -o input=$clipfile@"$mapsetName"
+g.region rast=$clipfile@"$mapsetName"
 
 #####Import geotiffs to clip#####
 #change to directory containing the inputs to export
@@ -122,6 +117,7 @@ do
 	r.in.gdal input=$InputDir/$file output=$newName
 
 	#export clipped file
-	r.out.gdal input=$newName@"$mapset" output=$InputDir/clipped/"$newName"_clipped.tif
-	chmod 775 $InputDir/clipped/"$newName"_clipped.tif
+	outFile=$InputDir/clipped/"$newName"_clipped.tif
+	r.out.gdal input=$newName@"$mapsetName" output=$outFile
+	chmod 775 $outFile
 done
