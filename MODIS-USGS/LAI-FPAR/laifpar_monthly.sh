@@ -1,6 +1,6 @@
 #!/bin/bash
 #laifpar_monthly.sh
-#written by Kimberly Peng
+#written by Kimberly Peng, revised by Yanni Zhan and John Squires
 #date created: October 2015
 #creates time series monthly average of 1000m lai and fpar
 
@@ -14,14 +14,9 @@ DatasetName=$3
 location=$4
 mapset=$5
 
-######Starting GRASS Environment
+#Starting GRASS Environment
 #some settings:
 TMPDIR=/tmp
-
-# directory of our software and grassdata:
-#MAINDIR=/
-# our private /usr/ directory:
-#MYUSER=$MAINDIR/Users/username/
 
 # path to GRASS binaries and libraries:
 export GISBASE=/usr/lib/grass64
@@ -55,9 +50,9 @@ g.gisenv -n
 #specify g.region based gdalinfo stats on one of the continent mosaics
 g.region -p n=39:59:59.999986N s=40:00:00.460219S e=78:19:31.27594E w=26:06:29.324819W rows=9600 cols=12532 res=0:00:30.000048
 
-#####
-
-#####CREATE TIME SERIES MONTHLY AVERAGE
+###
+#CREATE TIME SERIES MONTHLY AVERAGE
+###
 
 cd $InputDir
 OutputDir=$InputDir/outputs
@@ -74,29 +69,6 @@ do
 	#performs r.series based on dataset name
 	if [ $DatasetName == "Fpar" ] ; then
 		r.series input=$rslist output=FprAverage_"$eachMonth"@"$mapset" method=average
-
-		#fill null values with zero
-		r.null map=FprAverage_"$eachMonth"@"$mapset" null=0
-
-		if [ $NasaCode == "MCD15A2" ]; then
-			#import fill value file
-			#fill raster was created using r.null and setting the null values to 0-248
-			#the fill values will be restored before output
-			r.in.gdal input=/data4/afsisdata/USGS_updates/laifpar/fill_value_rasters/geographic/MCD15A2_Fpar_2002_2014_AvgFills.tif output=MCD15A2_Fpar_2002_2014_AvgFills -e
-
-			#restore the fill values 249-255
-			r.mapcalculator amap=FprAverage_"$eachMonth"@"$mapset" bmap='MCD15A2_Fpar_2002_2014_AvgFills@'$mapset formula="if(A,A,A+B)" outfile="$NasaCode"_"$eachMonth"_FprAverage
-		fi
-		if [ $NasaCode == "MOD15A2" ]; then
-			#import fill value file
-			#fill raster was created using r.null and setting the null values to 0-248
-			#the fill values will be restored before output
-			r.in.gdal input=/data4/afsisdata/USGS_updates/laifpar/fill_value_rasters/geographic/MOD15A2_Fpar_2000_2014_AvgFills.tif output=MOD15A2_Fpar_2000_2014_AvgFills -e
-
-			#restore the fill values 249-255
-			r.mapcalculator amap=FprAverage_"$eachMonth"@"$mapset" bmap='MOD15A2_Fpar_2000_2014_AvgFills@'$mapset formula="if(A,A,A+B)" outfile="$NasaCode"_"$eachMonth"_FprAverage
-		fi
-		#exports to geotiff
-		r.out.gdal input="$NasaCode"_"$eachMonth"_FprAverage@"$mapset" output=$OutputDir/"$NasaCode"_"$DatasetName"_"$eachMonth"_'Average.tif' type=Float32 
+		r.out.gdal input=FprAverage_"$eachMonth"@"$mapset" output=$OutputDir/"$NasaCode"_"$DatasetName"_"$eachMonth"_'Average.tif' type=Float32 
 	fi
 done
