@@ -1,8 +1,8 @@
 #!/bin/bash
 #get_data_USGS_temporal.sh
 #This script was modified to allow users the ability to specify temporal range of the data
-#written by Kimberly Peng
-#modified version of get_data_USGS.sh written by Sonya Ahamed
+#written by Kimberly Peng from Sonya Ahamed's get_data_USGS.sh script
+#modified by Yanni Zhan and John Squires
 
 
 #Sample commands
@@ -17,6 +17,11 @@ EndYear=$3
 basePath=$4
 baseDir=$5
 
+# read in authentication to the LP DAAC 
+echo Please provide your NASA Earthdata Login account information
+read -p 'username: ' username
+read -sp 'password: ' password
+
 #change to the Input directory location
 cd $InputDir
 
@@ -28,7 +33,7 @@ mkdir $baseDir
 cd $baseDir
 
 #Determine the directory dates for $baseDir
-curl http://e4ftl01.cr.usgs.gov/$basePath/$baseDir/ --user anonymous: > dirDates.txt
+curl https://e4ftl01.cr.usgs.gov/$basePath/$baseDir/ > dirDates.txt
 
 #creates an array containing a cleaned up version of all the dates
 i=1
@@ -67,8 +72,8 @@ do
 	cd $eachDate
 
 	#Captures a listing of all the files that are located in the current date directory
-	curl http://e4ftl01.cr.usgs.gov/$basePath/$baseDir/$eachDate/ --user anonymous: > allFiles4Date.txt
-	echo http://e4ftl01.cr.usgs.gov/$basePath/$baseDir/$eachDate
+	curl https://e4ftl01.cr.usgs.gov/$basePath/$baseDir/$eachDate/ > allFiles4Date.txt
+	echo https://e4ftl01.cr.usgs.gov/$basePath/$baseDir/$eachDate
 
 	#From all the files only get the *.hdf and *.hdf.xml files
        grep hdf allFiles4Date.txt > files2Get.txt
@@ -88,7 +93,7 @@ do
 			if [ ${newWord2:0:4} == "href" ]; then
 				eachFile=$(echo ${newWord2} | sed 's/.*"\(.*\)"[^"]*$/\1/')
 				#downloads file from USGS
-				curl --retry 10 -O http://e4ftl01.cr.usgs.gov/$basePath/$baseDir/$eachDate/$eachFile --user anonymous:
+				wget -L --user=$username curl --password=$password --load-cookies ~./cookies --save-cookies ~./cookies http://e4ftl01.cr.usgs.gov/$basePath/$baseDir/$eachDate/$eachFile
 #		        echo http://e4ftl01.cr.usgs.gov/$basePath/$baseDir/$eachDate/$eachFile
 				#generates error report if the file fails to download
 				if [ $? -ne 0 ]; then
