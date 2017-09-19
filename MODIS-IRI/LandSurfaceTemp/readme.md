@@ -40,7 +40,7 @@ The output file, **LSTD_avgIRI_Jul2002_Jun2015_mosaicLAEA.tif**, will be stored 
 
 ### 2. get_data_IRI_MODIS1km_c.sh
 
-This script creates an average for LST Day or LST Night depending on user specifications in the unit of Celsius and follows the exactly same instruction as get_data_IRI_MODIS1km.sh
+This script creates an average for LST Day or LST Night depending on user specifications in the unit of Celsius and follows the exact same instruction as get_data_IRI_MODIS1km.sh
 
 ### 3. get_mondata_IRI_MODIS1km.sh
 
@@ -77,6 +77,6 @@ The output file, **LSTD_avgIRI_Jul2002_Jun2015_mosaicLAEA.tif**, will be stored 
 
 ### 4. get_mondata_IRI_MODIS1km_c.sh
 
-This script creates a monthly average for LST Day or LST Night depending on user specifications in the unit of Celsius and follows the exactly same instruction as get_mondata_IRI_MODIS1km.sh.
+This script creates a monthly average for LST Day or LST Night depending on user specifications in the unit of Celsius and follows the exact same instruction as get_mondata_IRI_MODIS1km.sh.
 
 ### 5. geotiff_scale_clip.sh
