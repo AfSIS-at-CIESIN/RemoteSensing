@@ -8,7 +8,7 @@ The data products include the following:
 
 ### 1. get_data_IRI_MODIS1km.sh
 
-This script creates an average for LST Day or LST Night depending on user specifications in the unit of Fahrenheit.
+This script creates an average for LST Day or LST Night depending on user specifications in the unit of Kelvin.
 
 **Example command:**
 
@@ -44,7 +44,7 @@ This script creates an average for LST Day or LST Night depending on user specif
 
 ### 3. get_mondata_IRI_MODIS1km.sh
 
-This script creates a monthly average for LST Day or LST Night depending on user specifications in the unit of Fahrenheit.
+This script creates a monthly average for LST Day or LST Night depending on user specifications in the unit of Kelvin.
 
 **Example command:**
 
