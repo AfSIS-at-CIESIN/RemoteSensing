@@ -8,7 +8,7 @@ The data products include the following:
 
 ### 1. get_data_IRI_MODIS1km.sh
 
-This script creates an average for LST Day or LST Night depending on user specifications.
+This script creates an average for LST Day or LST Night depending on user specifications in the unit of Fahrenheit.
 
 **Example command:**
 
@@ -38,9 +38,13 @@ The command above downloads and mosaics for Africa the time series average for L
 **Outputs**
 The output file, **LSTD_avgIRI_Jul2002_Jun2015_mosaicLAEA.tif**, will be stored in the directory you entered as a parameter in the execution command.
 
-### 2. get_mondata_IRI_MODIS1km.sh
+### 2. get_data_IRI_MODIS1km_c.sh
 
-This script creates a monthly average for LST Day or LST Night depending on user specifications.
+This script creates an average for LST Day or LST Night depending on user specifications in the unit of Celsius and follows the exactly same instruction as get_data_IRI_MODIS1km.sh
+
+### 3. get_mondata_IRI_MODIS1km.sh
+
+This script creates a monthly average for LST Day or LST Night depending on user specifications in the unit of Fahrenheit.
 
 **Example command:**
 
@@ -70,4 +74,9 @@ The command above downloads and mosaics for Africa the time series average for L
 **Outputs**
 The output file, **LSTD_avgIRI_Jul2002_Jun2015_mosaicLAEA.tif**, will be stored in the directory you entered as a parameter in the execution command.
 
-### 3. geotiff_scale_clip.sh
+
+### 4. get_mondata_IRI_MODIS1km_c.sh
+
+This script creates a monthly average for LST Day or LST Night depending on user specifications in the unit of Celsius and follows the exactly same instruction as get_mondata_IRI_MODIS1km.sh.
+
+### 5. geotiff_scale_clip.sh
